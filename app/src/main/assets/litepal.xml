@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<litepal>
+    <!--数据库名字-->
+    <dbname value="cool_weather"/>
+
+    <!--版本号-->
+    <version value="1"/>
+
+    <!--将Province，City和County3个实体类添加到映射列表当中-->
+    <list>
+        <mapping class="com.butel.mycoolweather.db.Province"/>
+        <mapping class="com.butel.mycoolweather.db.City"/>
+        <mapping class="com.butel.mycoolweather.db.County"/>
+    </list>
+
+</litepal>
