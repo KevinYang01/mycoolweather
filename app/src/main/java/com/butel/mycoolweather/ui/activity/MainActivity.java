@@ -1,7 +1,9 @@
-package com.butel.mycoolweather;
+package com.butel.mycoolweather.ui.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.butel.mycoolweather.R;
 
 public class MainActivity extends AppCompatActivity {
 
