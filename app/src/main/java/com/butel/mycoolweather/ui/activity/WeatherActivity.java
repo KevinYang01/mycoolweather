@@ -275,7 +275,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         //开启自动更新天气的服务
         Intent intent = new Intent(this, AutoUpdateService.class);
-        startActivity(intent);
+        startService(intent);
 
     }
 

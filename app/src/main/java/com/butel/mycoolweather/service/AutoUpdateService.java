@@ -26,6 +26,7 @@ import okhttp3.Response;
 public class AutoUpdateService extends Service {
 
     public static final String TAG = "AutoUpdateService";
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;

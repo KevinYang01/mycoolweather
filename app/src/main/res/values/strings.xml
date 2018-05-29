@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyCoolWeather</string>
+    <string name="app_name">酷欧天气</string>
     <string name="forecast">预报</string>
     <string name="ari_quality">空气质量</string>
     <string name="aqi_index">AQI指数</string>
