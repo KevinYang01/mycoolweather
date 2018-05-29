@@ -10,7 +10,7 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
-        android:background="@drawable/ic_menu" />
+        android:background="@drawable/ic_home" />
 
     <!--城市名称-->
     <TextView
