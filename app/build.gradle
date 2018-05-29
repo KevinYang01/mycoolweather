@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'CoolWeather'
+            keyPassword '198992'
+            storeFile file('E:/Android/KeyStore/cool_weather.jks')
+            storePassword '678879'
+        }
+    }
     compileSdkVersion 24
     defaultConfig {
         applicationId "com.butel.mycoolweather"
@@ -14,20 +22,24 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:24.2.1'
-//    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-//    testImplementation 'junit:junit:4.12'
-//    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-//    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation 'org.litepal.android:core:1.3.2' //使用LitePal管理数据库
-    implementation 'com.squareup.okhttp3:okhttp:3.9.1' //使用okHttp进行网络请求
-    implementation 'com.google.code.gson:gson:2.8.2' //使用GSON来解析JSON数据
-    implementation 'com.github.bumptech.glide:glide:3.7.0' //使用Glide来加载图片
-
+    //    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    //    testImplementation 'junit:junit:4.12'
+    //    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    //    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    implementation 'org.litepal.android:core:1.3.2'
+    //使用LitePal管理数据库
+    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+    //使用okHttp进行网络请求
+    implementation 'com.google.code.gson:gson:2.8.2'
+    //使用GSON来解析JSON数据
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    //使用Glide来加载图片
 }

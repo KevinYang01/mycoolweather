@@ -1,10 +1,13 @@
 package com.butel.mycoolweather.util;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.butel.mycoolweather.db.City;
 import com.butel.mycoolweather.db.County;
 import com.butel.mycoolweather.db.Province;
+import com.butel.mycoolweather.gson.Weather;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,9 +16,12 @@ import org.json.JSONObject;
 /**
  * Created by YangLin on 2018/4/5.
  * 处理和解析服务器返回的省市县数据，JSON格式
+ *
  */
 
 public class Utility {
+
+    public static final String TAG = "Utility";
 
     /**
      * 解析和处理服务器返回的省级数据
@@ -23,6 +29,8 @@ public class Utility {
      * @return 返回true: 解析成功  false：解析失败
      */
     public static boolean handleProvinceResponse(String response){
+        Log.i(TAG, "handleProvinceResponse()");
+
         if (!TextUtils.isEmpty(response)){
             try {
                 //创建省级数据的JSON数组
@@ -54,6 +62,8 @@ public class Utility {
      * @return   返回true: 解析成功  false：解析失败
      */
     public static boolean handleCityResponse(String response, int provinceId){
+        Log.i(TAG, "handleCityResponse()");
+
          if(!TextUtils.isEmpty(response)){
              try {
                  //创建市级数据的JSON数组
@@ -75,7 +85,6 @@ public class Utility {
                  e.printStackTrace();
              }
          }
-
          return false;
     }
 
@@ -86,6 +95,8 @@ public class Utility {
      * @return   返回true: 解析成功  false：解析失败
      */
     public static boolean handleCountyResponse(String response, int cityId){
+        Log.i(TAG, "handleCountyResponse()");
+
         if (!TextUtils.isEmpty(response)){
             try {
                 //创建县级数据的JSON数组
@@ -109,5 +120,28 @@ public class Utility {
             }
         }
         return false;
+    }
+
+    /**
+     * 解析服务器返回的天气JSON数据
+     * @param response 返回的JSON字符串
+     * @return         返回的Weather实体类
+     */
+    public static Weather handlerWeatherResponse(String response){
+        Log.i(TAG, "handlerWeatherResponse()");
+
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            //创建Gson类
+            Gson gson = new Gson();
+
+            return gson.fromJson(weatherContent, Weather.class);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

@@ -2,8 +2,10 @@ package com.butel.mycoolweather.ui.fragment;
 
 import android.app.Fragment;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +16,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.butel.mycoolweather.Constant.HttpConstant;
 import com.butel.mycoolweather.R;
+import com.butel.mycoolweather.constant.HttpConstant;
 import com.butel.mycoolweather.db.City;
 import com.butel.mycoolweather.db.County;
 import com.butel.mycoolweather.db.Province;
+import com.butel.mycoolweather.ui.activity.MainActivity;
+import com.butel.mycoolweather.ui.activity.WeatherActivity;
 import com.butel.mycoolweather.util.HttpUtil;
 import com.butel.mycoolweather.util.Utility;
 
@@ -39,9 +43,14 @@ import okhttp3.Response;
 
 public class ChooseAreaFragment extends Fragment {
 
+    public static final String TAG = "ChooseAreaFragment";
+    public static final String WEATHER_ID = "weather_id";
+
     public static final int LEVEL_PROVINCE = 0;
     public static final int LEVEL_CITY = 1;
     public static final int LEVEL_COUNTY = 2;
+
+
 
     private ProgressDialog progressDialog;
     private TextView title;
@@ -66,10 +75,11 @@ public class ChooseAreaFragment extends Fragment {
     private int currentLevel;
 
 
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView()");
+
         View view = inflater.inflate(R.layout.choose_area, container, false);
         //获取标题和返回按钮控件
         title = (TextView) view.findViewById(R.id.tv_choose_area_title);
@@ -86,6 +96,8 @@ public class ChooseAreaFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        Log.i(TAG, "onActivityCreated()");
+
         //刚开始查询中国所有的省份
         queryProvinces();
 
@@ -101,6 +113,24 @@ public class ChooseAreaFragment extends Fragment {
                     //选中某个城市，就查询城市下面所有的县
                     selectedCity = cityList.get(position);
                     queryCounties();
+                }else if (currentLevel == LEVEL_COUNTY){
+                    //选中每个县，就根据weatherId来查询该县的天气
+                    String weatherId = countyList.get(position).getWeatherId();
+                    if (getActivity() instanceof MainActivity){
+                        //跳转到天气界面
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra(WEATHER_ID, weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }else if (getActivity() instanceof WeatherActivity){
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        //关闭菜单
+                        activity.drawer.closeDrawers();
+                        //请求刷新数据
+                        activity.srl_weather.setRefreshing(true);
+                        activity.requestWeatherData(weatherId);
+                    }
+
                 }
             }
         });
@@ -124,11 +154,15 @@ public class ChooseAreaFragment extends Fragment {
      * 查询中国所有省份，优先从数据库总查询，如果没有查询到，就从服务器查询
      */
     private void queryProvinces() {
+        Log.i(TAG, "queryProvinces()");
+
         title.setText("中国");
         backButton.setVisibility(View.GONE);
         //通过LitePal查询数据库,获取所有省的数据
         provinceList = DataSupport.findAll(Province.class);
         if (provinceList.size() > 0){
+            Log.i(TAG, "queryProvinces(), from DataSupport");
+
             //清空adapter中集合里面的所有数据
             dataList.clear();
             for (Province province : provinceList) {
@@ -139,6 +173,8 @@ public class ChooseAreaFragment extends Fragment {
             listView.setSelection(0);
             currentLevel = LEVEL_PROVINCE;
         }else {
+            Log.i(TAG, "queryProvinces(), from Server");
+
             String address = HttpConstant.HOST + "china";
             //从服务器查询
             queryFromServer(address, "province");
@@ -149,11 +185,15 @@ public class ChooseAreaFragment extends Fragment {
      * 查询某个省份下面所有的城市，优先从数据库总查询，如果没有查询到，就从服务器查询
      */
     private void queryCities() {
+        Log.i(TAG, "queryCities()");
+
         title.setText(selectedProvince.getProvinceName());
         backButton.setVisibility(View.VISIBLE);
         //通过LitePal查询数据库,获取省下面所有市的数据
         cityList = DataSupport.where("provinceid = ?", String.valueOf(selectedProvince.getId())).find(City.class);
         if (cityList.size() > 0){
+            Log.i(TAG, "queryCities(), from DataSupport");
+
             //清空适配器中集合里面的数据
             dataList.clear();
             for (City city : cityList) {
@@ -164,6 +204,8 @@ public class ChooseAreaFragment extends Fragment {
             listView.setSelection(0);
             currentLevel = LEVEL_CITY;
         }else {
+            Log.i(TAG, "queryCities(), from Server");
+
             int provinceCode = selectedProvince.getProvinceCode();
             String address = HttpConstant.HOST + "china" + "/" + provinceCode;
             //从服务器查询
@@ -176,11 +218,15 @@ public class ChooseAreaFragment extends Fragment {
      * 查询某个城市下面所有的县，优先从数据库总查询，如果没有查询到，就从服务器查询
      */
     private void queryCounties() {
+        Log.i(TAG, "queryCounties()");
+
         title.setText(selectedCity.getCityName());
         backButton.setVisibility(View.VISIBLE);
         //通过LitePal查询数据库,获取市下面所有县的数据
         countyList = DataSupport.where("cityid = ?", String.valueOf(selectedCity.getId())).find(County.class);
         if (countyList.size() > 0){
+            Log.i(TAG, "queryCounties(), from DataSupport");
+
             //清空适配器中集合里面的数据
             dataList.clear();
             for (County county : countyList) {
@@ -191,6 +237,8 @@ public class ChooseAreaFragment extends Fragment {
             listView.setSelection(0);
             currentLevel = LEVEL_COUNTY;
         }else {
+            Log.i(TAG, "queryCounties(), from Server");
+
             int provinceCode = selectedProvince.getProvinceCode();
             int cityCode = selectedCity.getCityCode();
             String address = HttpConstant.HOST + "china" + "/" + provinceCode + "/" + cityCode;
@@ -205,6 +253,8 @@ public class ChooseAreaFragment extends Fragment {
      * @param type    类型
      */
     private void queryFromServer(String address, final String type) {
+        Log.i(TAG, "queryFromServer, type =" + type);
+
         //显示加载进度对话框
         showProgressDialog();
         //想服务器请求数据
@@ -260,7 +310,6 @@ public class ChooseAreaFragment extends Fragment {
             }
         });
     }
-
 
     //显示加载进度对话框
     private void showProgressDialog() {
