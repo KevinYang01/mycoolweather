@@ -1,5 +1,6 @@
 package com.butel.mycoolweather.ui.activity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -25,6 +26,7 @@ import com.butel.mycoolweather.R;
 import com.butel.mycoolweather.constant.HttpConstant;
 import com.butel.mycoolweather.gson.ForeCast;
 import com.butel.mycoolweather.gson.Weather;
+import com.butel.mycoolweather.service.AutoUpdateService;
 import com.butel.mycoolweather.ui.fragment.ChooseAreaFragment;
 import com.butel.mycoolweather.util.HttpUtil;
 import com.butel.mycoolweather.util.Utility;
@@ -123,14 +125,14 @@ public class WeatherActivity extends AppCompatActivity {
 
         if (!TextUtils.isEmpty(weatherString)){
             Log.d(TAG, "getWeatherData(), 有缓存数据，直接解析天气数据");
-            //有缓存的时候直接解析天气数据
+            //有缓存的天气数据时候直接解析天气数据
             Weather weather = Utility.handlerWeatherResponse(weatherString);
             weatherId = weather.basic.weatherId;
             //处理天气数据
             showWeatherInfo(weather);
         }else {
-            Log.d(TAG, "getWeatherData(), 没有缓存数据，想服务器请求天气数据");
-            //无缓存时，weatherId
+            Log.d(TAG, "getWeatherData(), 没有缓存数据，向服务器请求天气数据");
+            //无缓存数据是时，拿到选中的weatherId
             weatherId = getIntent().getStringExtra(ChooseAreaFragment.WEATHER_ID);
             weatherLayout.setVisibility(View.INVISIBLE);
             //请求数据,再保存在缓存
@@ -270,6 +272,10 @@ public class WeatherActivity extends AppCompatActivity {
         sportText.setText(sport);
 
         weatherLayout.setVisibility(View.VISIBLE);
+
+        //开启自动更新天气的服务
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startActivity(intent);
 
     }
 
