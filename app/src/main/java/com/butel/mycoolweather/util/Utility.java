@@ -133,7 +133,9 @@ public class Utility {
         try {
             JSONObject jsonObject = new JSONObject(response);
             JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
-            String weatherContent = jsonArray.getJSONObject(0).toString();
+            JSONObject jsonObject1 = jsonArray.getJSONObject(0);
+            String weatherContent = jsonObject1.toString();
+
             //创建Gson类
             Gson gson = new Gson();
 

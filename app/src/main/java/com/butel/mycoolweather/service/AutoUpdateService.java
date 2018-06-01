@@ -65,7 +65,7 @@ public class AutoUpdateService extends Service {
             //有缓存时先解析出天气数据，从数据中拿到天气id
             Weather weather = Utility.handlerWeatherResponse(weatherString);
             String weatherId = weather.basic.weatherId;
-            //拿到这个天气id后再重新想服务器请求最新的天气数据
+            //拿到这个天气id后再重新向服务器请求最新的天气数据
             String weatherUrl = HttpConstant.HOST + "weather?cityid=" + weatherId + "&key=" + HttpConstant.KEY;
 
             HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
@@ -107,6 +107,7 @@ public class AutoUpdateService extends Service {
         HttpUtil.sendOkHttpRequest(requestBgImageUrl, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                //获取天气背景图片url
                 String bgImageUrl = response.body().string();
 
                 Log.i(TAG, "后台更新背景图成功, 图片url：" + bgImageUrl);
